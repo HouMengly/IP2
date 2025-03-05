@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -63,11 +64,11 @@ class ProductController extends Controller
     {
         $product = Product::find($productId);
 
-        $product = $product->update($request->all());
+        $product->update($request->all());
 
         return response()->json([
             'message' => 'Product updated successfully',
-            'product' => $product
+            'product' => $product->fresh()
         ]);
     }
 
