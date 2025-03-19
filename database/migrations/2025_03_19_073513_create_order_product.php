@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->double('price')->nullable(false);
             $table->integer('quantity')->unsigned()->nullable(false);
-            $table->unsignedBigInteger('order_id'); // ✅ Fix: Add order_id
+            $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('product_id');
 
-            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade'); // ✅ Fix: Foreign key to orders
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
 
             $table->timestamps();
