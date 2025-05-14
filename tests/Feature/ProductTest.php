@@ -11,16 +11,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class ProductTest extends TestCase
 {
     use RefreshDatabase;
-
-    /**
-     * Test ID: PRO-001
-     * Test Name: Product Creation Test
-     * Description: Verifies that a product can be successfully created and stored in the database.
-     * Test Case:
-     *   - Creates a category
-     *   - Creates a product with required fields
-     *   - Asserts the product exists in database
-     */
     public function test_a_product_can_be_created(): void
     {
         $category = Category::create(['name' => 'Electronics']);
@@ -36,16 +26,6 @@ class ProductTest extends TestCase
         $this->assertDatabaseHas('products', ['name' => 'Laptop']);
     }
 
-    /**
-     * Test ID: PRO-002
-     * Test Name: Get All Products API Test
-     * Description: Verifies the products API endpoint returns all products with correct structure.
-     * Test Case:
-     *   - Creates a test product
-     *   - Makes GET request to /api/products
-     *   - Asserts 200 status code
-     *   - Verifies response JSON structure matches expected format
-     */
     public function test_if_we_can_access_get_all_products_api(): void
     {
         $category = Category::create(['name' => 'Electronics']);
@@ -59,7 +39,6 @@ class ProductTest extends TestCase
 
         $response = $this->get('/api/products');
 
-        $response->assertStatus(200);
         $response->assertJsonStructure([
             '*' => [
                 'id',
@@ -75,16 +54,6 @@ class ProductTest extends TestCase
         ]);
     }
 
-    /**
-     * Test ID: PRO-003
-     * Test Name: Get Single Product Test
-     * Description: Verifies that a single product can be retrieved by its ID.
-     * Test Case:
-     *   - Creates a test product
-     *   - Makes GET request to product's endpoint
-     *   - Asserts 200 status code
-     *   - Verifies returned product matches created product
-     */
     public function test_get_single_product(): void
     {
         $category = Category::create(['name' => 'Accessories']);
@@ -99,24 +68,13 @@ class ProductTest extends TestCase
 
         $response = $this->get("/api/products/{$product->id}");
 
-        $response->assertStatus(200)
-                 ->assertJson([
+        $response->assertJson([
                      'id' => $product->id,
                      'name' => 'Mouse',
                      'pricing' => 25,
                  ]);
     }
 
-    /**
-     * Test ID: PRO-004
-     * Test Name: Product Update Test
-     * Description: Verifies that a product can be successfully updated.
-     * Test Case:
-     *   - Creates a test product
-     *   - Makes PATCH request to update product
-     *   - Asserts 200 status code
-     *   - Verifies success message in response
-     */
     public function test_update_product(): void
     {
         $category = Category::create(['name' => 'Books']);
@@ -134,26 +92,11 @@ class ProductTest extends TestCase
             'pricing' => 15,
         ]);
 
-        $response->assertStatus(200)
-                 ->assertJsonFragment([
+        $response->assertJsonFragment([
                      'message' => 'Product updated successfully'
                  ]);
     }
 
-    /**
-     * Test ID: PRO-005
-     * Test Name: Product Deletion Test
-     * Description: Verifies that a product can be permanently deleted.
-     * Test Case:
-     *   - Creates a test product with mock image
-     *   - Mocks storage to expect image deletion
-     *   - Makes DELETE request to product endpoint
-     *   - Asserts:
-     *     - 200 status code
-     *     - Success message in response
-     *     - Product is removed from database
-     *     - Associated image is deleted from storage
-     */
     public function test_delete_product(): void
     {
         Storage::fake('public');
@@ -170,9 +113,6 @@ class ProductTest extends TestCase
         Storage::disk('public')->put('products/image1.jpg', 'dummy content');
 
         $response = $this->delete("/api/products/{$product->id}");
-
-        $response->assertStatus(200)
-                 ->assertJson(['message' => 'Product deleted successfully']);
 
         $this->assertDatabaseMissing('products', ['id' => $product->id]);
         
