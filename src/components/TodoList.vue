@@ -1,23 +1,31 @@
 <template>
-  <ul class="todoLists">
+  <div v-if="loading">Loading todos...</div>
+  <ul v-else class="todoLists">
     <template v-if="status == 'completed'">
       <TodoItem
         v-for="todo of completedTasks"
+        :key="todo.id"
         icon="uil-adobe-alt"
         :todo="todo"
+        @toggle="toggleStatus"
+        @delete="deleteTodo"
       />
     </template>
     <template v-else>
       <TodoItem
         v-for="todo of pendingTasks"
+        :key="todo.id"
         icon="uil-adobe-alt"
         :todo="todo"
+        @toggle="toggleStatus"
+        @delete="deleteTodo"
       />
     </template>
   </ul>
 </template>
+
 <script>
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 import TodoItem from "./TodoItem.vue";
 import { useTodoStore } from "../stores/todo";
 
@@ -26,45 +34,28 @@ export default {
     const todoStore = useTodoStore();
     return { todoStore };
   },
-  name: "TodoList",
   props: ["status"],
-  components: {
-    TodoItem,
-  },
+  components: { TodoItem },
   data() {
     return {
-      color: "red",
+      loading: true,
     };
   },
   async mounted() {
-    // we will call action fetchTodos
-    await this.todoStore.fetchTodos();
+    await this.fetchTodos();
+    this.loading = false;
   },
   computed: {
-    ...mapState(useTodoStore, ["todos", "countTodos"]),
+    ...mapState(useTodoStore, ["todos"]),
     completedTasks() {
-      if (this.todos) {
-        return this.todos.filter((todo) => todo.completedAt != null);
-      }
-      return [];
+      return this.todos.filter((todo) => todo.completedAt != null);
     },
     pendingTasks() {
-      if (this.todos) {
-        // if (this.todos.length > 2) {
-        //   this.todos.push({ task: "new" });
-        // }
-        return this.todos.filter((todo) => todo.completedAt == null);
-      }
-      return [];
+      return this.todos.filter((todo) => todo.completedAt == null);
     },
   },
-  watch: {
-    todos: {
-      immediate: true,
-      handler: function (dataChanged) {
-        console.log("todos are changed");
-      },
-    },
+  methods: {
+    ...mapActions(useTodoStore, ["fetchTodos", "toggleStatus", "deleteTodo"]),
   },
 };
 </script>
