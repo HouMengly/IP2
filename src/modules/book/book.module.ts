@@ -1,9 +1,10 @@
+// src/modules/booking/booking.module.ts
 import { Module } from '@nestjs/common';
-import { BookResolver } from './book.resolver';
+import { BookingResolver } from './book.resolver';
+import { BookingService } from './book.service';
+import { HotelService } from '../hotel/hotel.service';
 
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [BookResolver],
+  providers: [BookingResolver, BookingService, HotelService],
 })
-export class BookModule {}
+export class BookingModule {}
